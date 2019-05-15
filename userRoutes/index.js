@@ -17,14 +17,14 @@ router.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const data = await db.getById(id);
-    console.log(data);
     res.status(200).json({ data });
   } catch (err) {
     res.status(500).json({ err });
   }
 });
 
-router.post("/", async (req, res) => {
+// Id based on user
+router.post("/:id/posts", async (req, res) => {
   const user = req.body;
   try {
     const data = await db.insert(user);
@@ -44,12 +44,11 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", nameCap, async (req, res) => {
   const id = req.params.id;
   const { name } = req.body;
-  console.log(name);
   try {
-    const data = await db.update(id, { name });
+    const data = await db.update(id, name);
     if (!data) {
       res.status(404).json({ error: "User with that ID doesn't exists." });
     } else if (name === undefined) {
@@ -61,4 +60,11 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ err });
   }
 });
+
+function nameCap(req, res, next) {
+  const { name } = req.body;
+  upperName = `${name[0].toUpperCase}${name.slice(1, name.length)}`;
+  next();
+}
+
 module.exports = router;
